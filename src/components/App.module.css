@@ -1,0 +1,83 @@
+body {
+  padding: 60px 20px;
+  height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, #05f5f9 0%, #fbb5ec 100%);
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  font-size: 40px;
+  border-radius: 15px;
+  box-shadow: 0 1px 10px rgba(100, 99, 99, 0.3);
+  padding: 40px 20px;
+  width: 100vh;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 40px;
+  padding-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 34px;
+  padding-bottom: 10px;
+}
+
+input {
+  display: block;
+  width: 200px;
+  padding: 5px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: 2px solid rgb(3, 3, 77);
+  margin: 0;
+  outline: none;
+}
+
+input:hover,
+input:focus {
+  border: 2px solid rgb(9, 159, 234);
+}
+
+li,
+label {
+  font-size: 22px;
+}
+
+button {
+  width: 100px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+  color: rgb(3, 3, 77);
+  box-shadow: 0 1px 10px rgba(100, 99, 99, 0.3);
+  background-color: rgb(240, 246, 246);
+}
+button:hover,
+button:focus {
+  background-color: rgb(3, 3, 77);
+  color: white;
+  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.3);
+}

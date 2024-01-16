@@ -1,0 +1,11 @@
+.list {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-right: 10px;
+}
+
+ul li:not(:last-child) {
+  padding-bottom: 10px;
+}
