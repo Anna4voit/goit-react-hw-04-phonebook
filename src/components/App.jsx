@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { nanoid } from 'nanoid';
 import { ContactList } from './ContactList/ContactList';
 import { ContactForm } from './ContactForm/ContactForm';
@@ -7,101 +7,84 @@ import css from '../components/App.module.css';
 
 const LS_KEY = 'contacts-list';
 
-export class App extends Component {
-  state = {
-    contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
-    filter: '',
-  };
+export const App = () => {
+  const [filter, setFilter] = useState('');
 
-  componentDidMount() {
-    const parsedContacts = JSON.parse(localStorage.getItem(LS_KEY));
-    if (parsedContacts?.length) {
-      this.setState({
-        contacts: parsedContacts,
-      });
+  const [contactsList, setContactsList] = useState(() => {
+    return JSON.parse(localStorage.getItem(LS_KEY)) ?? [];
+  });
+
+  //непонятная хрень, которая позволяет при первом рендере не записывать в local storage снова данные, которые из него получили
+  const firstRender = useRef(true);
+
+  useEffect(() => {
+    if (!firstRender.current) {
+      localStorage.setItem(LS_KEY, JSON.stringify(contactsList));
     }
-  }
+  }, [contactsList]);
 
-  componentDidUpdate(_, prevState) {
-    if (this.state.contacts.length !== prevState.contacts.length) {
-      localStorage.setItem(LS_KEY, JSON.stringify(this.state.contacts));
-    }
-  }
+  useEffect(() => {
+    firstRender.current = false;
+  }, []);
 
-  isDublicateName(name) {
+  const isDublicateName = ({ name }) => {
     const normalizedName = name.toLowerCase();
-    const { contacts } = this.state;
-    const dublicateName = contacts.find(item => {
+    const dublicateName = contactsList.find(item => {
       const normalizedCurrentName = item.name.toLowerCase();
       return normalizedName === normalizedCurrentName;
     });
     return Boolean(dublicateName);
-  }
+  };
 
-  addContact = (name, number) => {
-    if (this.isDublicateName(name)) {
-      console.log(name);
-      return alert(`${name} is alredy in contacts`);
+  const addContact = data => {
+    if (isDublicateName(data)) {
+      console.log(data.name);
+      return alert(`${data.name} is alredy in contacts`);
     }
-
-    const contact = {
-      id: 'id-' + nanoid(),
-      name,
-      number,
-    };
-    this.setState(prevState => ({
-      contacts: [...prevState.contacts, contact],
-    }));
-  };
-
-  deleteContact = id => {
-    this.setState(({ contacts }) => {
-      const newContact = contacts.filter(item => item.id !== id);
-      return { contacts: newContact };
+    setContactsList(prevContactsList => {
+      const newContact = {
+        id: 'id-' + nanoid(),
+        ...data,
+      };
+      return [...prevContactsList, newContact];
     });
   };
 
-  changeFilter = event => {
-    this.setState({
-      filter: event.target.value,
-    });
+  const deleteContact = id => {
+    setContactsList(prevContactsList =>
+      prevContactsList.filter(item => item.id !== id)
+    );
   };
 
-  getFilterContacts() {
-    const { filter, contacts } = this.state;
+  const changeFilter = event => {
+    setFilter(event.target.value);
+  };
+
+  const getFilterContacts = () => {
     if (!filter) {
-      return contacts;
+      return contactsList;
     }
-
     const normalizedFilter = filter.toLowerCase();
-    const filteredContacts = contacts.filter(({ name }) => {
+    const filteredContacts = contactsList.filter(({ name }) => {
       const normalizedName = name.toLowerCase();
       return normalizedName.includes(normalizedFilter);
     });
     return filteredContacts;
-  }
+  };
 
-  render() {
-    const contactsList = this.getFilterContacts();
-    const { addContact, changeFilter, deleteContact } = this;
+  const itemContacts = getFilterContacts();
 
-    return (
-      <div className={css.box}>
-        <div>
-          <h1 className={css.title}>Phonebook</h1>
-          <ContactForm onSubmit={addContact} />
-        </div>
-        <div className={css.boxContacts}>
-          <h2 className={css.subtitle}>Contacts</h2>
-          <Filter filter={this.state.filter} changeFilter={changeFilter} />
-          <ContactList contacts={contactsList} deleteContact={deleteContact} />
-        </div>
+  return (
+    <div className={css.box}>
+      <div>
+        <h1 className={css.title}>Phonebook</h1>
+        <ContactForm onSubmit={addContact} />
       </div>
-    );
-  }
-}
+      <div className={css.boxContacts}>
+        <h2 className={css.subtitle}>Contacts</h2>
+        <Filter filter={filter} changeFilter={changeFilter} />
+        <ContactList contacts={itemContacts} deleteContact={deleteContact} />
+      </div>
+    </div>
+  );
+};
