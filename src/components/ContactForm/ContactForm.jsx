@@ -6,26 +6,29 @@ export const ContactForm = ({ onSubmit }) => {
   const nameId = nanoid();
   const phoneId = nanoid();
 
-  const [contacts, setContacts] = useState({
-    name: '',
-    number: '',
-  });
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
   const handleChange = event => {
     const { name, value } = event.currentTarget;
-    setContacts({
-      ...contacts,
-      [name]: value,
-    });
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+      case 'number':
+        setNumber(value);
+        break;
+      default:
+        return;
+    }
   };
 
   const handleSubmit = event => {
     event.preventDefault();
-    onSubmit({ ...contacts });
-    setContacts({ name: '', number: '' });
+    onSubmit({ name, number });
+    setName('');
+    setNumber('');
   };
-
-  const { name, number } = contacts;
 
   return (
     <form className={css.form} onSubmit={handleSubmit}>
